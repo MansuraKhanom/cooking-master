@@ -1,6 +1,6 @@
 // Reading the seach input and showing them on the console bar
 const searchBtn = document.getElementById("searchBtn");
-const foodName = document.getElementById("food-name");
+var foodName;
 
 // Creating fetchHandler function to reuse it multiple times
 function fetchHandler(url) {
@@ -30,6 +30,18 @@ function fetchHandler(url) {
 
 searchBtn.addEventListener("click", function () {
     const searchInput = document.getElementById("search").value;
+    const oldCard = document.getElementById("card-div");
+    if (oldCard !== null) {
+        oldCard.remove();
+    }
+    // created dynamic card
+    const cardDiv = document.createElement("div");
+    cardDiv.id = "card-div";
+    const cardTitle = `<h4 id="food-name"></h4>`;
+    cardDiv.innerHTML = cardTitle;
+    document.body.appendChild(cardDiv);
+
+    foodName = document.getElementById("food-name");
 
     // Eleminating null string value
     if (searchInput === "") {
@@ -41,5 +53,4 @@ searchBtn.addEventListener("click", function () {
         url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchInput}`;
         fetchHandler(url);
     }
-
 })
