@@ -1,9 +1,33 @@
 // Reading the seach input and showing them on the console bar
 const searchBtn = document.getElementById("searchBtn");
 
+// loading meal details
+function mealDetails(element) {
+    let mealDetailsDiv = document.getElementById("meal-details");
+
+    // fetching meal details by id
+    let mealId = element.getElementsByClassName("meal-id")[0].innerText;
+    url = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`;
+    fetch(url).then(
+        res => res.json()
+    ).then(
+        data => {
+            let meal = data.meals[0];
+            mealDetailsDiv.getElementsByClassName("card-img-top")[0].src = meal.strMealThumb;
+            mealDetailsDiv.getElementsByClassName("card-title")[0].innerText = meal.strMeal;
+
+            // filtering ingredients
+            let ingredients = Object.keys(meal).filter(key => key.includes("strIngredient")).map(ingredientKey => meal[ingredientKey]).filter(ingredient => ingredient !== "");
+            mealDetailsDiv.getElementsByClassName("card-text")[0].innerText = ingredients;
+        }
+    )
+
+    mealDetailsDiv.style.display = "block"; // making meal details visible
+}
+
 // Creating fetchHandler function to reuse it multiple times
 function fetchHandler(url) {
-    const fetchData = fetch(url).then(
+    fetch(url).then(
         res => {
             // Response validation and showing error message
             if (res.ok) {
@@ -17,18 +41,22 @@ function fetchHandler(url) {
         data => {
             // data validation and showing error message
             if (data.meals !== null) {
-                let meals = data.meals;
+                meals = data.meals;
                 meals.forEach(meal => {
                     // Meal added as card list item
                     const card = document.createElement("li");
+                    // displaying meal details onclick anchor tag
                     const cardBody = `
-                        <div class="card" style="width: 18rem;">
-                            <img src=${meal.strMealThumb} class="card-img-top"
-                                alt="">
-                            <div class="card-body">
-                                <h5 class="card-title">${meal.strMeal}</h5>
+                        <a href="#" onClick="mealDetails(this)">
+                            <div class="card" style="width: 18rem;">
+                                <img src=${meal.strMealThumb} class="card-img-top"
+                                    alt="">
+                                <div class="card-body">
+                                    <p class="meal-id" style="display: none;">${meal.idMeal}</p>
+                                    <h5 class="card-title">${meal.strMeal}</h5>
+                                </div>
                             </div>
-                        </div>`;
+                        </a>`;
                     card.innerHTML = cardBody;
                     cardList.appendChild(card);
                 });
@@ -45,6 +73,9 @@ function fetchHandler(url) {
 }
 
 searchBtn.addEventListener("click", function () {
+    let mealDetailsDiv = document.getElementById("meal-details");
+    mealDetailsDiv.style.display = "none";
+
     const searchInput = document.getElementById("search").value;
     const oldCardList = document.getElementById("card-list");
     // old card list deleted on every search
@@ -62,10 +93,10 @@ searchBtn.addEventListener("click", function () {
         errorMsg.innerText = "Please enter a valid name or letter!";
         cardList.appendChild(errorMsg);
     } else if (searchInput.length === 1) {
-        url = `https://www.themealdb.com/api/json/v1/1/search.php?f=${searchInput}`;
+        let url = `https://www.themealdb.com/api/json/v1/1/search.php?f=${searchInput}`;
         fetchHandler(url);
     } else {
-        url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchInput}`;
+        let url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchInput}`;
         fetchHandler(url);
     }
 })

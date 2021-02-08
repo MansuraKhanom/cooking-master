@@ -11,3 +11,6 @@
 .card img{
     border-radius:1.1rem 1.1rem 0 0;
 }
+#meal-details{
+    display: none;
+}
