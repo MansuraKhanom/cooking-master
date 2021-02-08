@@ -1,1 +1,13 @@
 *{font-family: 'Roboto', sans-serif;}
+#card-list{
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 2em;
+}
+.card{
+    border-radius: 1.1rem;
+}
+.card img{
+    border-radius:1.1rem 1.1rem 0 0;
+}

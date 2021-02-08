@@ -1,6 +1,5 @@
 // Reading the seach input and showing them on the console bar
 const searchBtn = document.getElementById("searchBtn");
-var foodName;
 
 // Creating fetchHandler function to reuse it multiple times
 function fetchHandler(url) {
@@ -18,34 +17,50 @@ function fetchHandler(url) {
         data => {
             // data validation and showing error message
             if (data.meals !== null) {
-                // console.log(data);
-                foodName.innerText = data.meals[0].strMeal;
+                let meals = data.meals;
+                meals.forEach(meal => {
+                    // Meal added as card list item
+                    const card = document.createElement("li");
+                    const cardBody = `
+                        <div class="card" style="width: 18rem;">
+                            <img src=${meal.strMealThumb} class="card-img-top"
+                                alt="">
+                            <div class="card-body">
+                                <h5 class="card-title">${meal.strMeal}</h5>
+                            </div>
+                        </div>`;
+                    card.innerHTML = cardBody;
+                    cardList.appendChild(card);
+                });
             } else {
                 throw "No results found!";
             }
         },
         rej => { throw "No results found!"; }
-    ).catch(err => foodName.innerText = err);
+    ).catch(err => {
+        let errorMsg = document.createElement("li");
+        errorMsg.innerText = err;
+        cardList.appendChild(errorMsg);
+    });
 }
 
 searchBtn.addEventListener("click", function () {
     const searchInput = document.getElementById("search").value;
-    const oldCard = document.getElementById("card-div");
-    if (oldCard !== null) {
-        oldCard.remove();
+    const oldCardList = document.getElementById("card-list");
+    // old card list deleted on every search
+    if (oldCardList !== null) {
+        oldCardList.remove();
     }
-    // created dynamic card
-    const cardDiv = document.createElement("div");
-    cardDiv.id = "card-div";
-    const cardTitle = `<h4 id="food-name"></h4>`;
-    cardDiv.innerHTML = cardTitle;
-    document.body.appendChild(cardDiv);
-
-    foodName = document.getElementById("food-name");
+    // created dynamic card list
+    cardList = document.createElement("ul");
+    cardList.id = "card-list";
+    document.body.appendChild(cardList);
 
     // Eleminating null string value
     if (searchInput === "") {
-        foodName.innerText = "Please enter a valid input!";
+        let errorMsg = document.createElement("li");
+        errorMsg.innerText = "Please enter a valid name or letter!";
+        cardList.appendChild(errorMsg);
     } else if (searchInput.length === 1) {
         url = `https://www.themealdb.com/api/json/v1/1/search.php?f=${searchInput}`;
         fetchHandler(url);
