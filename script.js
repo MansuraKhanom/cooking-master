@@ -16,9 +16,21 @@ function mealDetails(element) {
             mealDetailsDiv.getElementsByClassName("card-img-top")[0].src = meal.strMealThumb;
             mealDetailsDiv.getElementsByClassName("card-title")[0].innerText = meal.strMeal;
 
-            // filtering ingredients
-            let ingredients = Object.keys(meal).filter(key => key.includes("strIngredient")).map(ingredientKey => meal[ingredientKey]).filter(ingredient => ingredient !== "");
-            mealDetailsDiv.getElementsByClassName("card-text")[0].innerText = ingredients;
+            // filtering measurements and ingredients            
+            let measurements = Object.keys(meal).filter(key => key.includes("strMeasure")).map(measurementKey => meal[measurementKey]).filter(ingredient => ingredient !== "" && ingredient !== null);
+            let ingredients = Object.keys(meal).filter(key => key.includes("strIngredient")).map(ingredientKey => meal[ingredientKey]).filter(ingredient => ingredient !== "" && ingredient !== null);
+
+            // adding ingredients to list
+            const ingredientList = mealDetailsDiv.getElementsByClassName("ingredient-list")[0];
+            ingredientList.innerHTML = '';
+            ingredients.forEach(ingredient => {
+                let ingredientListItem = document.createElement("li");
+                ingredientListItem.innerText = measurements[ingredients.indexOf(ingredient)] + " " + ingredient;
+                ingredientList.appendChild(ingredientListItem);
+            });
+
+            // cooking instructions added
+            mealDetailsDiv.getElementsByClassName("recipe")[0].innerText = meal.strInstructions;
         }
     )
 
